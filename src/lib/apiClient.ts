@@ -22,7 +22,7 @@ export interface ApplicationsAdapter {
     data: Partial<Application>
   ): Promise<Application>;
   deleteApplication(id: string): Promise<void>;
-  seedApplications?(applications: Application[]): Promise<void>;
+  seedApplications(applications: Application[]): Promise<void>;
 }
 
 const localAdapter: ApplicationsAdapter = {
@@ -142,6 +142,26 @@ const remoteAdapter: ApplicationsAdapter = {
       throw new Error("Failed to delete application");
     }
   },
+
+  async seedApplications(applications) {
+    const existingResponse = await fetch("/api/applications");
+    if (!existingResponse.ok) {
+      throw new Error("Failed to check existing applications");
+    }
+    const existing = (await existingResponse.json()) as Application[];
+    if (existing.length > 0) {
+      return;
+    }
+
+    const response = await fetch("/api/applications/seed", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ applications }),
+    });
+    if (!response.ok) {
+      throw new Error("Failed to seed applications");
+    }
+  },
 };
 
 function resolveApiMode(): ApiMode {
@@ -197,7 +217,7 @@ class ApiClient {
   async seedApplications(
     applications: Application[] = mockApplications
   ): Promise<void> {
-    await this.adapter.seedApplications?.(applications);
+    await this.adapter.seedApplications(applications);
   }
 }
 
