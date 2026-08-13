@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useLocalStorage } from "@/hooks/use-local-storage";
+import { apiClient } from "@/lib/apiClient";
 import {
   mockApplications,
   mockCertifications,
@@ -23,10 +24,7 @@ import type {
 const INIT_KEY = "careertrack_initialized";
 
 export function useCareerData() {
-  const [applications, setApplications] = useLocalStorage<Application[]>(
-    "careertrack_applications",
-    []
-  );
+  const [applications, setApplications] = useState<Application[]>([]);
   const [skills, setSkills] = useLocalStorage<Skill[]>(
     "careertrack_skills",
     []
@@ -43,56 +41,63 @@ export function useCareerData() {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    try {
-      const initialized = localStorage.getItem(INIT_KEY);
-      if (!initialized) {
-        setApplications(mockApplications);
-        setSkills(mockSkills);
-        setCertifications(mockCertifications);
-        setGoals(mockGoals);
-        setProfile(mockProfile);
-        localStorage.setItem(INIT_KEY, "true");
+    let cancelled = false;
+
+    async function initialize() {
+      try {
+        const initialized = localStorage.getItem(INIT_KEY);
+        if (!initialized) {
+          await apiClient.seedApplications(mockApplications);
+          setSkills(mockSkills);
+          setCertifications(mockCertifications);
+          setGoals(mockGoals);
+          setProfile(mockProfile);
+          localStorage.setItem(INIT_KEY, "true");
+        }
+
+        const apps = await apiClient.getApplications();
+        if (!cancelled) {
+          setApplications(apps);
+        }
+      } catch (error) {
+        console.error("Failed to initialize career data:", error);
+      } finally {
+        if (!cancelled) {
+          setIsReady(true);
+        }
       }
-    } catch (error) {
-      console.error("Failed to initialize career data:", error);
     }
-    setIsReady(true);
-  }, [setApplications, setSkills, setCertifications, setGoals, setProfile]);
+
+    void initialize();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [setSkills, setCertifications, setGoals, setProfile]);
 
   const addApplication = useCallback(
-    (data: Omit<Application, "id" | "createdAt" | "updatedAt">) => {
-      const now = new Date().toISOString();
-      const app: Application = {
-        ...data,
-        id: generateId(),
-        createdAt: now,
-        updatedAt: now,
-      };
+    async (data: Omit<Application, "id" | "createdAt" | "updatedAt">) => {
+      const app = await apiClient.createApplication(data);
       setApplications((prev) => [app, ...prev]);
       return app;
     },
-    [setApplications]
+    []
   );
 
   const updateApplication = useCallback(
-    (id: string, data: Partial<Application>) => {
+    async (id: string, data: Partial<Application>) => {
+      const updated = await apiClient.updateApplication(id, data);
       setApplications((prev) =>
-        prev.map((app) =>
-          app.id === id
-            ? { ...app, ...data, updatedAt: new Date().toISOString() }
-            : app
-        )
+        prev.map((app) => (app.id === id ? updated : app))
       );
     },
-    [setApplications]
+    []
   );
 
-  const deleteApplication = useCallback(
-    (id: string) => {
-      setApplications((prev) => prev.filter((app) => app.id !== id));
-    },
-    [setApplications]
-  );
+  const deleteApplication = useCallback(async (id: string) => {
+    await apiClient.deleteApplication(id);
+    setApplications((prev) => prev.filter((app) => app.id !== id));
+  }, []);
 
   const addSkill = useCallback(
     (data: { name: string; level: SkillLevel; progress: number }) => {

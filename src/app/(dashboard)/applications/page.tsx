@@ -52,7 +52,7 @@ export default function ApplicationsPage() {
     });
   }, [applications, search, statusFilter]);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     companyName: string;
     role: string;
     location: string;
@@ -60,9 +60,9 @@ export default function ApplicationsPage() {
     status: ApplicationStatus;
   }) => {
     if (editing) {
-      updateApplication(editing.id, data);
+      await updateApplication(editing.id, data);
     } else {
-      addApplication(data);
+      await addApplication(data);
     }
     setDialogOpen(false);
     setEditing(null);
@@ -73,9 +73,9 @@ export default function ApplicationsPage() {
     setDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this application?")) {
-      deleteApplication(id);
+      await deleteApplication(id);
     }
   };
 
