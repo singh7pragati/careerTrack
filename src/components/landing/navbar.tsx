@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useAuth } from "@/components/providers/auth-provider";
 import { Logo } from "@/components/layout/logo";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { Button } from "@/components/ui/button";
 
 export function LandingNavbar() {
+  const { user, isLoading } = useAuth();
+
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
@@ -15,17 +18,28 @@ export function LandingNavbar() {
             Features
           </a>
           <a href="#benefits" className="hover:text-foreground transition-colors">
-            Benefits
+            Key Features
           </a>
           <a href="#cta" className="hover:text-foreground transition-colors">
-            Get Started
+            Demo
           </a>
         </nav>
         <div className="flex items-center gap-2">
           <ThemeToggle />
-          <Button asChild size="sm">
-            <Link href="/dashboard">Open Dashboard</Link>
-          </Button>
+          {!isLoading && user ? (
+            <Button asChild size="sm">
+              <Link href="/dashboard">Go to Dashboard</Link>
+            </Button>
+          ) : (
+            <>
+              <Button asChild variant="ghost" size="sm">
+                <Link href="/login">Sign In</Link>
+              </Button>
+              <Button asChild size="sm">
+                <Link href="/signup">Get Started</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

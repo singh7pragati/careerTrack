@@ -1,12 +1,12 @@
 import { CheckCircle2 } from "lucide-react";
 
 const benefits = [
-  "Stay organized during placement season",
-  "Track multiple applications without spreadsheets",
-  "Visualize your skill development over time",
-  "Set and achieve meaningful career milestones",
-  "Impress recruiters with a polished career portfolio",
-  "Works offline with local storage — your data stays private",
+  "Centralized management of job and internship applications",
+  "Structured tracking of application status across interview rounds",
+  "Skill proficiency monitoring with progress visualization",
+  "Certification records with issuing organization details",
+  "Short-term and long-term career goal planning",
+  "Client-side data persistence using browser local storage",
 ];
 
 export function Benefits() {
@@ -16,12 +16,13 @@ export function Benefits() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div>
             <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Why Students Love CareerTrack
+              Key Features of CareerTrack
             </h2>
             <p className="text-muted-foreground mb-8 leading-relaxed">
-              Placement season is stressful enough. CareerTrack gives you a
-              clear, organized view of your entire career pipeline so you can
-              focus on what matters — preparing and performing.
+              CareerTrack addresses the need for a unified career management
+              system by providing students with structured tools to organize
+              applications, monitor skills, and plan career objectives from a
+              single interface.
             </p>
             <ul className="space-y-4">
               {benefits.map((benefit) => (
@@ -37,7 +38,7 @@ export function Benefits() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium">Dashboard Overview</span>
-                  <span className="text-xs text-muted-foreground">Live preview</span>
+                  <span className="text-xs text-muted-foreground">Sample data</span>
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   {[

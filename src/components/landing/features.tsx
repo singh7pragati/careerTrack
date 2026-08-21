@@ -13,37 +13,37 @@ const features = [
     icon: Briefcase,
     title: "Application Tracker",
     description:
-      "Track every job and internship application with status updates from Applied to Offer Received.",
+      "Record and update job and internship applications through defined status stages from Applied to Offer Received.",
   },
   {
     icon: Calendar,
     title: "Deadline Management",
     description:
-      "Never miss an OA or interview. Keep application dates and round schedules organized.",
+      "Maintain application dates and interview round schedules in a structured format for timely follow-up.",
   },
   {
     icon: Sparkles,
     title: "Skills Progress",
     description:
-      "Monitor your technical skills with levels and visual progress bars to stay interview-ready.",
+      "Document technical skills with proficiency levels and visual progress indicators for self-assessment.",
   },
   {
     icon: Award,
     title: "Certifications",
     description:
-      "Store all your certifications with issuing organizations and certificate links in one place.",
+      "Maintain certification records including issuing organization, date earned, and verification links.",
   },
   {
     icon: Goal,
     title: "Career Goals",
     description:
-      "Set short-term and long-term career goals and track your progress toward achieving them.",
+      "Define short-term and long-term career objectives and track completion status over time.",
   },
   {
     icon: Search,
     title: "Smart Filtering",
     description:
-      "Filter applications by status and search by company or role to find what you need instantly.",
+      "Filter applications by status and search by company or role for efficient data retrieval.",
   },
 ];
 
@@ -53,11 +53,11 @@ export function Features() {
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold tracking-tight mb-4">
-            Everything You Need to Succeed
+            System Modules
           </h2>
           <p className="text-muted-foreground max-w-2xl mx-auto">
-            A complete toolkit designed specifically for students and freshers
-            navigating the competitive job market.
+            Core functional modules developed as part of the CareerTrack career
+            management system for students and fresh graduates.
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

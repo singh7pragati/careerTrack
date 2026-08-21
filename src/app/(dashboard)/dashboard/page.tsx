@@ -11,6 +11,7 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { WelcomeSection } from "@/components/dashboard/welcome-section";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
+import { useAuth } from "@/components/providers/auth-provider";
 import { useCareerContext } from "@/components/providers/career-data-provider";
 import {
   buildRecentActivity,
@@ -18,6 +19,7 @@ import {
 } from "@/lib/stats";
 
 export default function DashboardPage() {
+  const { user } = useAuth();
   const { applications, profile, isReady } = useCareerContext();
 
   if (!isReady) {
@@ -33,7 +35,7 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Your career overview at a glance"
       />
-      <WelcomeSection name={profile?.name} />
+      <WelcomeSection name={profile?.name || user?.name} />
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard
           title="Total Applications"

@@ -29,16 +29,16 @@ export default function CertificationsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Certification | null>(null);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     name: string;
     organization: string;
     dateEarned: string;
     certificateLink: string;
   }) => {
     if (editing) {
-      updateCertification(editing.id, data);
+      await updateCertification(editing.id, data);
     } else {
-      addCertification(data);
+      await addCertification(data);
     }
     setDialogOpen(false);
     setEditing(null);
@@ -49,9 +49,9 @@ export default function CertificationsPage() {
     setDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this certification?")) {
-      deleteCertification(id);
+      await deleteCertification(id);
     }
   };
 

@@ -1,16 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import { useLocalStorage } from "@/hooks/use-local-storage";
+import { useAuth } from "@/components/providers/auth-provider";
 import { apiClient } from "@/lib/apiClient";
 import {
   mockApplications,
   mockCertifications,
   mockGoals,
-  mockProfile,
   mockSkills,
 } from "@/lib/mock-data";
-import { generateId } from "@/lib/utils";
 import type {
   Application,
   ApplicationStatus,
@@ -21,46 +19,72 @@ import type {
   SkillLevel,
 } from "@/types";
 
-const INIT_KEY = "careertrack_initialized";
-
 export function useCareerData() {
+  const { user, isLoading: authLoading } = useAuth();
   const [applications, setApplications] = useState<Application[]>([]);
-  const [skills, setSkills] = useLocalStorage<Skill[]>(
-    "careertrack_skills",
-    []
-  );
-  const [certifications, setCertifications] = useLocalStorage<Certification[]>(
-    "careertrack_certifications",
-    []
-  );
-  const [goals, setGoals] = useLocalStorage<Goal[]>("careertrack_goals", []);
-  const [profile, setProfile] = useLocalStorage<Profile | null>(
-    "careertrack_profile",
-    null
-  );
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [certifications, setCertifications] = useState<Certification[]>([]);
+  const [goals, setGoals] = useState<Goal[]>([]);
+  const [profile, setProfile] = useState<Profile | null>(null);
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
 
-    async function initialize() {
+    if (authLoading) {
+      setIsReady(false);
+      return;
+    }
+
+    if (!user) {
+      setApplications([]);
+      setSkills([]);
+      setCertifications([]);
+      setGoals([]);
+      setProfile(null);
+      setIsReady(true);
+      return;
+    }
+
+    async function loadUserData() {
       try {
-        const initialized = localStorage.getItem(INIT_KEY);
-        if (!initialized) {
-          await apiClient.seedApplications(mockApplications);
-          setSkills(mockSkills);
-          setCertifications(mockCertifications);
-          setGoals(mockGoals);
-          setProfile(mockProfile);
-          localStorage.setItem(INIT_KEY, "true");
+        setIsReady(false);
+
+        // Optionally seed initial starter template data if user has no data yet
+        const seedKey = `careertrack_seeded_${user!.id}`;
+        if (typeof window !== "undefined" && !localStorage.getItem(seedKey)) {
+          await Promise.allSettled([
+            apiClient.seedApplications(mockApplications),
+            apiClient.seedSkills(mockSkills),
+            apiClient.seedCertifications(mockCertifications),
+            apiClient.seedGoals(mockGoals),
+          ]);
+          localStorage.setItem(seedKey, "true");
         }
 
-        const apps = await apiClient.getApplications();
+        const [
+          apps,
+          currentSkills,
+          currentCerts,
+          currentGoals,
+          currentProfile,
+        ] = await Promise.all([
+          apiClient.getApplications(),
+          apiClient.getSkills(),
+          apiClient.getCertifications(),
+          apiClient.getGoals(),
+          apiClient.getProfile(),
+        ]);
+
         if (!cancelled) {
           setApplications(apps);
+          setSkills(currentSkills);
+          setCertifications(currentCerts);
+          setGoals(currentGoals);
+          setProfile(currentProfile);
         }
       } catch (error) {
-        console.error("Failed to initialize career data:", error);
+        console.error("Failed to load user career data:", error);
       } finally {
         if (!cancelled) {
           setIsReady(true);
@@ -68,12 +92,12 @@ export function useCareerData() {
       }
     }
 
-    void initialize();
+    void loadUserData();
 
     return () => {
       cancelled = true;
     };
-  }, [setSkills, setCertifications, setGoals, setProfile]);
+  }, [user, authLoading]);
 
   const addApplication = useCallback(
     async (data: Omit<Application, "id" | "createdAt" | "updatedAt">) => {
@@ -100,108 +124,101 @@ export function useCareerData() {
   }, []);
 
   const addSkill = useCallback(
-    (data: { name: string; level: SkillLevel; progress: number }) => {
-      const skill: Skill = {
-        ...data,
-        id: generateId(),
-        createdAt: new Date().toISOString(),
-      };
+    async (data: { name: string; level: SkillLevel; progress: number }) => {
+      const skill = await apiClient.createSkill(data);
       setSkills((prev) => [skill, ...prev]);
       return skill;
     },
-    [setSkills]
+    []
   );
 
   const updateSkill = useCallback(
-    (id: string, data: Partial<Skill>) => {
+    async (id: string, data: Partial<Skill>) => {
+      const updated = await apiClient.updateSkill(id, data);
       setSkills((prev) =>
-        prev.map((s) => (s.id === id ? { ...s, ...data } : s))
+        prev.map((s) => (s.id === id ? updated : s))
       );
     },
-    [setSkills]
+    []
   );
 
   const deleteSkill = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      await apiClient.deleteSkill(id);
       setSkills((prev) => prev.filter((s) => s.id !== id));
     },
-    [setSkills]
+    []
   );
 
   const addCertification = useCallback(
-    (data: Omit<Certification, "id" | "createdAt">) => {
-      const cert: Certification = {
-        ...data,
-        id: generateId(),
-        createdAt: new Date().toISOString(),
-      };
+    async (data: Omit<Certification, "id" | "createdAt">) => {
+      const cert = await apiClient.createCertification(data);
       setCertifications((prev) => [cert, ...prev]);
       return cert;
     },
-    [setCertifications]
+    []
   );
 
   const updateCertification = useCallback(
-    (id: string, data: Partial<Certification>) => {
+    async (id: string, data: Partial<Certification>) => {
+      const updated = await apiClient.updateCertification(id, data);
       setCertifications((prev) =>
-        prev.map((c) => (c.id === id ? { ...c, ...data } : c))
+        prev.map((c) => (c.id === id ? updated : c))
       );
     },
-    [setCertifications]
+    []
   );
 
   const deleteCertification = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      await apiClient.deleteCertification(id);
       setCertifications((prev) => prev.filter((c) => c.id !== id));
     },
-    [setCertifications]
+    []
   );
 
   const addGoal = useCallback(
-    (data: Omit<Goal, "id" | "createdAt" | "completed" | "completedAt">) => {
-      const goal: Goal = {
-        ...data,
-        id: generateId(),
-        completed: false,
-        createdAt: new Date().toISOString(),
-      };
+    async (
+      data: Omit<Goal, "id" | "createdAt" | "completed" | "completedAt">
+    ) => {
+      const goal = await apiClient.createGoal(data);
       setGoals((prev) => [goal, ...prev]);
       return goal;
     },
-    [setGoals]
+    []
+  );
+
+  const updateGoal = useCallback(
+    async (id: string, data: Partial<Goal>) => {
+      const updated = await apiClient.updateGoal(id, data);
+      setGoals((prev) => prev.map((g) => (g.id === id ? updated : g)));
+    },
+    []
   );
 
   const toggleGoal = useCallback(
-    (id: string) => {
-      setGoals((prev) =>
-        prev.map((g) =>
-          g.id === id
-            ? {
-                ...g,
-                completed: !g.completed,
-                completedAt: !g.completed
-                  ? new Date().toISOString()
-                  : undefined,
-              }
-            : g
-        )
-      );
+    async (id: string) => {
+      const updated = await apiClient.toggleGoal(id);
+      setGoals((prev) => prev.map((g) => (g.id === id ? updated : g)));
     },
-    [setGoals]
+    []
   );
 
   const deleteGoal = useCallback(
-    (id: string) => {
+    async (id: string) => {
+      await apiClient.deleteGoal(id);
       setGoals((prev) => prev.filter((g) => g.id !== id));
     },
-    [setGoals]
+    []
   );
 
   const updateProfile = useCallback(
-    (data: Profile) => {
-      setProfile(data);
+    async (data: Profile) => {
+      const updated = await apiClient.updateProfile(data);
+      setProfile(updated);
+      return updated;
     },
-    [setProfile]
+    []
   );
 
   return {
@@ -221,6 +238,7 @@ export function useCareerData() {
     updateCertification,
     deleteCertification,
     addGoal,
+    updateGoal,
     toggleGoal,
     deleteGoal,
     updateProfile,

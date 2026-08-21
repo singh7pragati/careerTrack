@@ -18,21 +18,22 @@ export function Hero() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
               <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
             </span>
-            Built for students & freshers
+            Career Management Platform
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-6">
-            Take Control of Your{" "}
-            <span className="text-primary">Career Journey</span>
+          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight mb-4">
+            Career<span className="text-primary">Track</span>
           </h1>
+          <p className="text-xl sm:text-2xl font-medium text-foreground/90 mb-4">
+            Career Management Platform for Students
+          </p>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto leading-relaxed">
-            CareerTrack helps you manage internships, job applications, interview
-            rounds, skills, certifications, and goals — all from one beautiful
-            dashboard.
+            A centralized platform for managing internships, job applications,
+            interview rounds, skills, certifications, and career goals.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Button asChild size="lg" className="w-full sm:w-auto">
               <Link href="/dashboard">
-                Get Started Free
+                View Dashboard
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>
@@ -44,9 +45,9 @@ export function Hero() {
 
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-4 max-w-3xl mx-auto">
           {[
-            { icon: Briefcase, label: "Track Applications", value: "7 statuses" },
-            { icon: BarChart3, label: "Monitor Progress", value: "Real-time stats" },
-            { icon: Target, label: "Achieve Goals", value: "Short & long term" },
+            { icon: Briefcase, label: "Application Tracking", value: "7 status stages" },
+            { icon: BarChart3, label: "Career Analytics", value: "Dashboard overview" },
+            { icon: Target, label: "Goal Planning", value: "Short & long term" },
           ].map((item, i) => (
             <div
               key={item.label}

@@ -10,12 +10,12 @@ export function CTA() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(255,255,255,0.15),_transparent_60%)]" />
           <div className="relative z-10 max-w-2xl mx-auto">
             <h2 className="text-3xl font-bold tracking-tight mb-4">
-              Ready to Accelerate Your Career?
+              Project Demonstration
             </h2>
             <p className="text-primary-foreground/80 mb-8 leading-relaxed">
-              Join thousands of students who use CareerTrack to stay organized,
-              focused, and ahead of the competition. Start tracking today — it&apos;s
-              completely free.
+              Explore the CareerTrack dashboard to view application tracking,
+              skill monitoring, certification management, and goal planning
+              modules implemented in this project.
             </p>
             <Button
               asChild
@@ -24,7 +24,7 @@ export function CTA() {
               className="shadow-lg"
             >
               <Link href="/dashboard">
-                Launch Your Dashboard
+                View Dashboard
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
             </Button>

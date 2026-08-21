@@ -24,15 +24,15 @@ export default function SkillsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Skill | null>(null);
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     name: string;
     level: SkillLevel;
     progress: number;
   }) => {
     if (editing) {
-      updateSkill(editing.id, data);
+      await updateSkill(editing.id, data);
     } else {
-      addSkill(data);
+      await addSkill(data);
     }
     setDialogOpen(false);
     setEditing(null);
@@ -43,9 +43,9 @@ export default function SkillsPage() {
     setDialogOpen(true);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this skill?")) {
-      deleteSkill(id);
+      await deleteSkill(id);
     }
   };
 

@@ -7,17 +7,17 @@ export function Footer() {
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           <Logo />
           <p className="text-sm text-muted-foreground text-center">
-            © {new Date().getFullYear()} CareerTrack. Built for students & freshers.
+            © {new Date().getFullYear()} CareerTrack. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm text-muted-foreground">
             <a href="#features" className="hover:text-foreground transition-colors">
               Features
             </a>
             <a href="#benefits" className="hover:text-foreground transition-colors">
-              Benefits
+              Key Features
             </a>
             <a href="#cta" className="hover:text-foreground transition-colors">
-              Get Started
+              Demo
             </a>
           </div>
         </div>

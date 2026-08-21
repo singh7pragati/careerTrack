@@ -26,18 +26,18 @@ export default function GoalsPage() {
   const shortTermGoals = goals.filter((g) => g.type === "short-term");
   const longTermGoals = goals.filter((g) => g.type === "long-term");
 
-  const handleSubmit = (data: {
+  const handleSubmit = async (data: {
     title: string;
     description: string;
     type: GoalType;
   }) => {
-    addGoal(data);
+    await addGoal(data);
     setDialogOpen(false);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (window.confirm("Are you sure you want to delete this goal?")) {
-      deleteGoal(id);
+      await deleteGoal(id);
     }
   };
 

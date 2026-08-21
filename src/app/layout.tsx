@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { AuthProvider } from "@/components/providers/auth-provider";
 import { CareerDataProvider } from "@/components/providers/career-data-provider";
 import "./globals.css";
 
@@ -10,9 +11,9 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "CareerTrack — Personal Career Management Platform",
+  title: "CareerTrack — Career Management Platform for Students",
   description:
-    "Track internships, jobs, applications, skills, certifications, and career goals from a single dashboard.",
+    "A centralized platform for managing internships, job applications, interview rounds, skills, certifications, and career goals.",
 };
 
 export default function RootLayout({
@@ -29,7 +30,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <CareerDataProvider>{children}</CareerDataProvider>
+          <AuthProvider>
+            <CareerDataProvider>{children}</CareerDataProvider>
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

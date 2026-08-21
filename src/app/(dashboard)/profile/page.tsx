@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Save, User } from "lucide-react";
+import { LogOut, Save, User } from "lucide-react";
 import { DashboardHeader } from "@/components/layout/dashboard-header";
 import { LoadingSpinner } from "@/components/shared/loading-spinner";
+import { useAuth } from "@/components/providers/auth-provider";
 import { useCareerContext } from "@/components/providers/career-data-provider";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -20,6 +21,7 @@ const emptyProfile: Profile = {
 };
 
 export default function ProfilePage() {
+  const { logout } = useAuth();
   const { profile, isReady, updateProfile } = useCareerContext();
   const [form, setForm] = useState<Profile>(emptyProfile);
   const [saved, setSaved] = useState(false);
@@ -36,14 +38,14 @@ export default function ProfilePage() {
     setSaved(false);
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.name.trim() || !form.email.trim()) {
       setError("Name and email are required.");
       return;
     }
     setError("");
-    updateProfile(form);
+    await updateProfile(form);
     setSaved(true);
     setTimeout(() => setSaved(false), 3000);
   };
@@ -56,7 +58,7 @@ export default function ProfilePage() {
     <div>
       <DashboardHeader
         title="Profile"
-        description="Manage your personal information"
+        description="Manage your personal and academic information"
       />
 
       <Card className="max-w-2xl">
@@ -74,8 +76,8 @@ export default function ProfilePage() {
               </p>
             )}
             {saved && (
-              <p className="text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 rounded-md px-3 py-2">
-                Profile saved successfully!
+              <p className="text-sm text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/50 rounded-md px-3 py-2">
+                Profile updated successfully!
               </p>
             )}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -95,7 +97,7 @@ export default function ProfilePage() {
                   type="email"
                   value={form.email}
                   onChange={(e) => handleChange("email", e.target.value)}
-                  placeholder="you@university.edu"
+                  placeholder="your.email@example.com"
                 />
               </div>
               <div className="space-y-2">
@@ -128,10 +130,19 @@ export default function ProfilePage() {
                 />
               </div>
             </div>
-            <div className="pt-2">
+            <div className="pt-2 flex items-center justify-between">
               <Button type="submit">
                 <Save className="h-4 w-4" />
                 Save Profile
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="text-destructive hover:bg-destructive/10"
+                onClick={() => logout()}
+              >
+                <LogOut className="h-4 w-4" />
+                Sign Out
               </Button>
             </div>
           </form>

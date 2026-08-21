@@ -12,7 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import type { Goal, GoalType } from "@/types";
+import type { GoalType } from "@/types";
 
 interface GoalFormProps {
   onSubmit: (data: {
